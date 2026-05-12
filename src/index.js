@@ -2,12 +2,22 @@ import express from "express";
 import { config } from "dotenv";
 import { connectDB, disconnectDB } from "./config/db.js";
 
+//IMPORT ROUTES
+import authRoutes from "./routes/authRoutes.js";
+
 //Call third party to start when the server starts
 config();
 connectDB();
 
 //Initialize the express framework
 const app = express();
+
+//Body parsing middleware
+app.use(express.json()); //This ensures that JSON data is handled. Node and express don't handle JSON by default and require a parser.
+app.use(express.urlencoded({ extended: true })); //Ensures data from html is handled properly. Extended is such that nested objects are also parsed.
+
+//USE IMPORTED ROUTES
+app.use("/api/v1/auth", authRoutes);
 
 //Port config and listening to the server
 const PORT = 5001;

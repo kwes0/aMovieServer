@@ -5,11 +5,13 @@
   "main": "index.js",
   "author": "kw3so",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "express": "^5.2.1"
   },
