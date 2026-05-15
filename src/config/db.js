@@ -1,4 +1,3 @@
-
 // # OLD WAY OF IMPORTING PRISMA CLIENT
 // import { PrismaClient } from "@prisma/client";
 
@@ -11,16 +10,19 @@
 // });
 
 // # NEW WAY OF IMPORTING PRISMA CLIENT
-import { PrismaClient } from "../generated/prisma/index.js"; //This is is the correct configuration for prisma client
 import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../generated/prisma/client.ts"; //This is is the correct configuration for prisma client
+const connectionString = process.env.DATABASE_URL;
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
+const adapter = new PrismaPg({ connectionString });
+
+const prisma = new PrismaClient({
+  adapter,
+  log:
+    process.env.NODE_ENV === "development"
+      ? ["query", "error", "warn"]
+      : ["error"],
 });
-
-const prisma = new PrismaClient({ adapter });
-
-
 
 //DB connection
 const connectDB = async () => {

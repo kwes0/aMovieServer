@@ -1,10 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
 
@@ -12,56 +7,44 @@ datasource db {
   provider = "postgresql"
 }
 
-//User -> Movie -> Watchlist
-
-model User{
-  id String @id @default(uuid())
-  name String 
-  email String @unique 
-  password String
-
-  createdAt DateTime @default(now())
-
-  watchListItems WatchListItem[]//A corresponding field to the watchlist is required in prisma.
-  movies Movie[] @relation("MovieCreator")//We had the relation defined and that is what we shall call the relation when we reference it.
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  password       String
+  createdAt      DateTime        @default(now())
+  username       String
+  movies         Movie[]         @relation("MovieCreator")
+  watchListItems WatchListItem[]
 }
 
-model Movie{
-  id String @id @default(uuid())
-  title String
-  overview String? //To have the question mark means that the field is optional.
-  releaseYear Int
-  genres String[] @default([])
-  runtime Int?
-  posterUrl String?
-  createdBy String
- 
-  createdAt DateTime @default(now())
-
-  //Relationships
-  creator User @relation("MovieCreator",fields: [createdBy], references: [id], onDelete: Cascade) //We can provide a name for the relation to be able to identify it... where I don't know yet
-
-  watchListItems WatchListItem[] //This shows the relationship of the movie to potentially many watchListItems. and not assuming just one relationship.
-
+model Movie {
+  id             String          @id @default(uuid())
+  title          String
+  overview       String?
+  releaseYear    Int
+  genres         String[]        @default([])
+  runtime        Int?
+  posterUrl      String?
+  createdBy      String
+  createdAt      DateTime        @default(now())
+  creator        User            @relation("MovieCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  watchListItems WatchListItem[]
 }
 
-model WatchListItem{
-  id String @id @default(uuid())
-  userId String //Tie user to a watchlist
-  movieId String //Tie movie to a watchlist
-  status WatchListStatus @default(PLANNED) //Enum to track the status of the movie in the watchlist
-  rating Int?
-  notes String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  //Relationships
-  user User @relation(fields:[userId], references: [id], onDelete: Cascade)
-  movie Movie @relation(fields:[movieId], references: [id], onDelete: Cascade)
+model WatchListItem {
+  id        String          @id @default(uuid())
+  userId    String
+  movieId   String
+  status    WatchListStatus @default(PLANNED)
+  rating    Int?
+  notes     String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @default(now())
+  movie     Movie           @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-enum WatchListStatus{
+enum WatchListStatus {
   PLANNED
   WATCHING
   COMPLETED
