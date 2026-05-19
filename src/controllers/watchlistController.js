@@ -2,7 +2,7 @@ import { prisma } from "../config/db.js"; //This is how I will connect to prisma
 
 const addToWatchlist = async (req, res) => {
   //What do we need to add a movie to the watchlist?
-  const { movieId, status, rating, notes, userId } = req.body;
+  const { movieId, status, rating, notes } = req.body;
 
   //Check if the movie is in the db
   const movie = await prisma.movie.findUnique({
