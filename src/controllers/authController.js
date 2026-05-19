@@ -39,8 +39,6 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10); //Generate a salt with 10 rounds
     const hashedPswd = await bcrypt.hash(password, salt);
 
-    const token = generateToken(userExists.id);
-
     //5. Save the user to the database
 
     const user = await prisma.user.create({
@@ -50,7 +48,7 @@ const register = async (req, res) => {
         password: hashedPswd,
       },
     });
-
+    const token = generateToken(user.id, res);
     //6. Return a response to the client (success or error)
     res.status(201).json({
       status: "success",
@@ -102,7 +100,7 @@ const login = async (req, res) => {
     }
 
     //4. If password match, generate a JWT token and return to the client
-    const token = generateToken(userExists.id);
+    const token = generateToken(userExists.id, res);
     //5. Return a response to the client
 
     res.status(201).json({
@@ -119,4 +117,18 @@ const login = async (req, res) => {
   }
 };
 
-export { register, login };
+const logout = (req, res) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+    expires: new Date(0), // Set the cookie to expire when function is called.
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "User logged out",
+  });
+};
+
+export { register, login, logout };

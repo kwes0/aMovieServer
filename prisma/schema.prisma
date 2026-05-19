@@ -42,6 +42,8 @@ model WatchListItem {
   updatedAt DateTime        @default(now())
   movie     Movie           @relation(fields: [movieId], references: [id], onDelete: Cascade)
   user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([movieId, userId]) //This defines that the user and movie can't be dupilcated in this storage. It is an array that is passed. When using this combination you need to call it in that order delimited by an underscore. 
 }
 
 enum WatchListStatus {

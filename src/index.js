@@ -4,6 +4,7 @@ import { connectDB, disconnectDB } from "./config/db.js";
 
 //IMPORT ROUTES
 import authRoutes from "./routes/authRoutes.js";
+import watchlistRoutes from "./routes/watchlistRoutes.js";
 
 //Call third party to start when the server starts
 config();
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true })); //Ensures data from html is han
 
 //USE IMPORTED ROUTES
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/watchlist", watchlistRoutes);
 
 //Port config and listening to the server
 const PORT = 5001;
