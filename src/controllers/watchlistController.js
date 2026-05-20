@@ -14,27 +14,32 @@ const addToWatchlist = async (req, res) => {
   }
 
   //Checking if the movie is in the user's watchlist already - With this there is also some changes in the prisma schema. @@unique() - This is defines that the watchlistItems can't have a similar movieId and userIf
-  const existingInWatchlist = await prisma.watchListItem.findUnique(
-    //What defines a watchlist item? - movieId and userId
-    {
-      where: {
-        movieId_userId: {
-          //This is brought about by the unique schema change we made.
-          userId: userId, //We will include middlewares to map this.
-          movieId: movieId,
+  try {
+    const existingInWatchlist = await prisma.watchListItem.findUnique(
+      //What defines a watchlist item? - movieId and userId
+      {
+        where: {
+          movieId_userId: {
+            //This is brought about by the unique schema change we made.
+            movieId: movieId,
+            userId: req.user.id, //We will include middlewares to map this.
+          },
         },
       },
-    },
-  );
+    );
 
-  if (existingInWatchlist) {
-    return res.status(400).json({ error: "Movie is already in the watchlist" });
+    if (existingInWatchlist) {
+      return res
+        .status(400)
+        .json({ error: "Movie is already in the watchlist" });
+    }
+  } catch (err) {
+    console.error(err);
   }
-
   // Now we add something to the watchlist
   const watchlistItem = await prisma.watchListItem.create({
     data: {
-      userId,
+      userId: req.user.id,
       movieId,
       status: status || "PLANNED",
       rating,
@@ -51,4 +56,74 @@ const addToWatchlist = async (req, res) => {
   });
 };
 
-export { addToWatchlist };
+const deleteFromWatchlist = async (req, res) => {
+  // const movie = req.params.id; //Grabbed the movie from the movie
+
+  //Movie in the user watchlist?
+  const existingInWatchlist = await prisma.watchListItem.findUnique({
+    where: {
+      movieId_userId: {
+        movieId: req.params.id,
+        userId: req.user.id,
+      },
+    },
+  });
+
+  if (!existingInWatchlist) {
+    res.status(404).json({
+      error: "Sijui rada ni wicha astapa",
+    });
+  }
+  //If it is, now we delete it by the same compounded item.
+  await prisma.watchListItem.delete({
+    where: {
+      movieId_userId: {
+        movieId: req.params.id,
+        userId: req.user.id,
+      },
+    },
+  });
+
+  //We respond back
+  res.status(200).json({
+    status: "success",
+    message: "removed from watchlist",
+  });
+};
+//Update the status
+const updateStatusOnWatchlist = async (req, res) => {
+  const {status} = req.body
+  //User watchlist has the movie
+  const existingInWatchlist = await prisma.watchListItem.findUnique({
+    where: {
+      movieId_userId: {
+        movieId: req.params.id,
+        userId: req.user.id,
+      },
+    },
+  });
+
+  if (!existingInWatchlist) {
+    res.status(404).json({ error: "riegenye??" });
+  }
+  //update the status
+  const updatedMovie = await prisma.watchListItem.update({
+    where: {
+      movieId_userId: {
+        movieId: req.params.id,
+        userId: req.user.id,
+      },
+    },
+    data: {
+      status: status,
+    },
+  });
+  //Respond to the request
+  res.status(201).json({
+    status: "success",
+    message: "updated status",
+    data: updatedMovie,
+  });
+};
+
+export { addToWatchlist, deleteFromWatchlist, updateStatusOnWatchlist };

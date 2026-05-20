@@ -1,6 +1,10 @@
 import express from "express";
-import { addToWatchlist } from "../controllers/watchlistController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
+import {
+  addToWatchlist,
+  deleteFromWatchlist,
+  updateStatusOnWatchlist,
+} from "../controllers/watchlistController.js";
 
 const router = express.Router();
 
@@ -10,5 +14,9 @@ router.use(authMiddleware);
 //route definitions
 // Add movies to the watchlist
 router.post("/addToWatchlist", addToWatchlist);
+
+router.delete("/:id", deleteFromWatchlist);
+
+router.put("/:id", updateStatusOnWatchlist);
 
 export default router;
