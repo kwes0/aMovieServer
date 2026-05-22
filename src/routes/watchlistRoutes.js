@@ -5,6 +5,11 @@ import {
   deleteFromWatchlist,
   updateStatusOnWatchlist,
 } from "../controllers/watchlistController.js";
+import { validateWatchlistItem } from "../middleware/watchlistValidators.js";
+import {
+  addToWatchlistSchema,
+  updateWatchlistSchema,
+} from "../validators/validateRequest.js";
 
 const router = express.Router();
 
@@ -13,10 +18,18 @@ router.use(authMiddleware);
 
 //route definitions
 // Add movies to the watchlist
-router.post("/addToWatchlist", addToWatchlist);
+router.post(
+  "/addToWatchlist",
+  validateWatchlistItem(addToWatchlistSchema),
+  addToWatchlist,
+);
 
 router.delete("/:id", deleteFromWatchlist);
 
-router.put("/:id", updateStatusOnWatchlist);
+router.put(
+  "/:id",
+  validateWatchlistItem(updateWatchlistSchema),
+  updateStatusOnWatchlist,
+);
 
 export default router;

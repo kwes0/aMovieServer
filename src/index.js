@@ -25,7 +25,7 @@ app.use("/api/v1/watchlist", watchlistRoutes);
 const PORT = 5001;
 const server = app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);
-});
+}); //We need to create an instance of the server so that we can handle the instance errors. 
 
 //Handle unhandled promise rejection
 process.on("unhandledRejection", (err) => {

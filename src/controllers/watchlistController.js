@@ -92,7 +92,7 @@ const deleteFromWatchlist = async (req, res) => {
 };
 //Update the status
 const updateStatusOnWatchlist = async (req, res) => {
-  const {status} = req.body
+  const { status, rating, notes } = req.body;
   //User watchlist has the movie
   const existingInWatchlist = await prisma.watchListItem.findUnique({
     where: {
@@ -116,6 +116,8 @@ const updateStatusOnWatchlist = async (req, res) => {
     },
     data: {
       status: status,
+      rating: rating,
+      notes: notes,
     },
   });
   //Respond to the request
