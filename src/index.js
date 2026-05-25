@@ -5,6 +5,7 @@ import { connectDB, disconnectDB } from "./config/db.js";
 //IMPORT ROUTES
 import authRoutes from "./routes/authRoutes.js";
 import watchlistRoutes from "./routes/watchlistRoutes.js";
+import moviesRoutes from "./routes/moviesRoutes.js";
 
 //Call third party to start when the server starts
 config();
@@ -20,12 +21,13 @@ app.use(express.urlencoded({ extended: true })); //Ensures data from html is han
 //USE IMPORTED ROUTES
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/watchlist", watchlistRoutes);
+app.use("/api/v1/movies", moviesRoutes);
 
 //Port config and listening to the server
 const PORT = 5001;
 const server = app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);
-}); //We need to create an instance of the server so that we can handle the instance errors. 
+}); //We need to create an instance of the server so that we can handle the instance errors.
 
 //Handle unhandled promise rejection
 process.on("unhandledRejection", (err) => {
