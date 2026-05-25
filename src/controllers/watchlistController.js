@@ -1,3 +1,4 @@
+import { success } from "zod";
 import { prisma } from "../config/db.js"; //This is how I will connect to prisma client and do a check of our db
 
 const addToWatchlist = async (req, res) => {
@@ -128,4 +129,28 @@ const updateStatusOnWatchlist = async (req, res) => {
   });
 };
 
-export { addToWatchlist, deleteFromWatchlist, updateStatusOnWatchlist };
+const getMyWatchlist = async (req, res) => {
+  const myWatchlist = await prisma.watchListItem.findMany({
+    where: {
+      userId: req.user.id,
+    },
+  });
+  if (!myWatchlist || myWatchlist < 1) {
+    res.status(404).json({
+      error: "Unatrace nini mze?",
+    });
+  }
+  res.status(200).json({
+    status:"success",
+    data:{
+      myWatchlist
+    }
+  })
+};
+
+export {
+  addToWatchlist,
+  deleteFromWatchlist,
+  updateStatusOnWatchlist,
+  getMyWatchlist,
+};
